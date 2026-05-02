@@ -1,78 +1,58 @@
-# Distributed To-Do List System
+🚀 Key Distributed Features
+1. Shared State & Consistency
+The system utilizes a Centralized Server Architecture where the Server acts as the "Single Source of Truth."
 
-A shared task management system with real-time synchronization across multiple clients.
+Mechanism: When a client performs an action (Add/Delete/Update), the state change is sent to the server, which then broadcasts the update to all active nodes.
 
-## Features
+Goal: Ensures Eventual Consistency across all connected clients.
 
-- **Add and delete tasks** - Create and remove shared tasks
-- **View shared task list** - See all tasks from all connected users
-- **Updates reflected across all clients** - Real-time synchronization
-- **Shared state management** - Thread-safe task management
-- **Distributed consistency** - Proper locking and synchronization
+2. Synchronization & Concurrency Control
+To handle multiple users interacting with the same data simultaneously:
 
-## Requirements
+Locks: Implemented ReentrantReadWriteLock in the TaskManager to manage concurrent access.
 
-- Java 11 or higher
-- Maven 3.6+
-- JavaFX (included with Java 11+)
+Thread Safety: Multiple clients can read tasks (Read Lock) while ensuring exclusive access during modifications (Write Lock) to prevent race conditions.
 
-## Building the Project
+3. Logical Clocks (Total Ordering)
+To solve the issue of clock drift between different laptops, we implemented Lamport-style Logical Clocks.
 
-```bash
-mvn clean compile
-```
+Ordering: The Server assigns a unique sequenceNumber to every task.
 
-## Running the Application
+Result: Regardless of the local time on a user's computer, all tasks are displayed in the same global order for every user.
 
-### Option 1: Using Maven
+4. File Persistence (Reliability)
+Demonstrates Durability in distributed systems.
 
-Run the main application (chooses between Server or Client mode):
-```bash
-mvn javafx:run
-```
+Database Simulation: Every state change is automatically serialized and saved to server_storage.dat.
 
-### Option 2: Run Server and Client Separately
+Recovery: If the server process is terminated, it automatically restores the task list upon restart, ensuring no data loss.
 
-**Start the Server:**
-```bash
-mvn compile exec:java -Dexec.mainClass="com.distributed.todolist.Server"
-```
+5. Fault Tolerance & Recovery
+The system is designed to handle network instability.
 
-**Start a Client:**
-```bash
-mvn compile exec:java -Dexec.mainClass="com.distributed.todolist.ClientApp"
-```
+Retry Logic: The Client includes an automated connection retry loop that attempts to re-establish a link to the server if the socket connection drops.
 
-## How to Use
+Graceful Degradation: Provides real-time feedback via the status bar when a connection is interrupted.
 
-1. **First, start one instance as Server:**
-   - Click "Start as Server" button
-   - Server will listen on port 5000
+6. Real-time Concurrency Visualization
+Event Notification: Features a "Who is Typing" status. When one user interacts with a field, a specialized message is broadcast to others, demonstrating low-latency event-driven communication.
 
-2. **Then, start multiple instances as Clients:**
-   - Click "Start as Client" button
-   - Enter the server host (default: localhost)
-   - Enter the port (default: 5000)
-   - Enter your username
-   - Click "Connect"
+🛠️ Tech Stack
+Language: Java 26
 
-3. **Manage tasks:**
-   - Add tasks using the input fields at the top
-   - Click the checkbox to mark tasks as complete
-   - Right-click on a task to delete or toggle completion
-   - All changes are synchronized across all connected clients
+GUI: JavaFX (CSS-styled for modern UI)
 
-## Architecture
+Networking: Java Sockets (TCP/IP)
 
-- **Server**: Manages shared task list and broadcasts updates to all clients
-- **Client**: JavaFX GUI for interacting with the shared task list
-- **Task**: Serializable task object with title, description, and completion status
-- **Message**: Protocol for client-server communication
-- **TaskManager**: Thread-safe task storage with read-write locking
+Build Tool: Maven
 
-## Error Handling
+📂 Project Structure
+Server.java: Handles multi-threaded client connections and broadcasts.
 
-- Input validation for required fields
-- Connection error handling with user feedback
-- Exception handling throughout the application
-- Graceful disconnection handling
+TaskManager.java: Manages the shared state, persistence, and locking logic.
+
+ClientApp.java: The interactive JavaFX interface with real-time listeners.
+
+Message.java: The communication protocol (Common Object Model).
+
+Task.java: The serializable data model with Lamport timestamps.
