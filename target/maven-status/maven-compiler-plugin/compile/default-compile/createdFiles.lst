@@ -1,0 +1,12 @@
+com\distributed\todolist\ClientApp.class
+com\distributed\todolist\ClientApp$2.class
+com\distributed\todolist\TaskManager$TaskChangeListener.class
+com\distributed\todolist\ClientApp$1.class
+com\distributed\todolist\Message.class
+com\distributed\todolist\ClientHandler$1.class
+com\distributed\todolist\Server.class
+com\distributed\todolist\Message$MessageType.class
+com\distributed\todolist\Task.class
+com\distributed\todolist\TaskManager.class
+com\distributed\todolist\Server$1.class
+com\distributed\todolist\ClientApp$TaskListCell.class
